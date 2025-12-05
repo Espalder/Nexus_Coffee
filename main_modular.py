@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nexus Café - Sistema de Gestión Integral (Versión Modular)
+Nexus Cofee - Sistema de Gestión Integral (Versión Modular)
 Aplicación completa para la administración de cafetería con estructura modular
 """
 
@@ -35,17 +35,14 @@ class NexusCafeApp:
         self.usuario_actual = None
         self.reverse_sort = False  # Para ordenamiento
         
-        try:
-            with open('config_mysql.json', 'r') as f:
-                self.db_config = json.load(f)
-        except FileNotFoundError:
-            self.db_config = {
-                'host': os.environ.get('MYSQL_HOST', 'localhost'),
-                'user': os.environ.get('MYSQL_USER', 'root'),
-                'password': os.environ.get('MYSQL_PASSWORD', ''),
-                'database': os.environ.get('MYSQL_DATABASE', 'nexus_coffee'),
-                'port': int(os.environ.get('MYSQL_PORT', '3306'))
-            }
+        # Configuración de base de datos MySQL
+        self.db_config = {
+            'host': 'localhost',
+            'user': 'root',  # Cambiar según tu configuración
+            'password': 'KV7$LU%9k&tQ#ayU',  # Cambiar según tu configuración
+            'database': 'nexus_coffee',
+            'port': 3306
+        }
         
         # Inicializar gestor de base de datos
         self.db_manager = DatabaseManager(self.db_config)
@@ -1377,8 +1374,10 @@ class NexusCafeApp:
                     INSERT INTO productos (nombre, categoria, precio, stock, stock_minimo, descripcion)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """
-                self.db_manager.ejecutar_query(query, (nombre, categoria, precio, stock, stock_minimo, descripcion))
-                
+                resultado = self.db_manager.ejecutar_query(query, (nombre, categoria, precio, stock, stock_minimo, descripcion))
+                if not resultado:
+                    messagebox.showerror("Error", "No se pudo guardar el producto en la base de datos")
+                    return
                 messagebox.showinfo("Éxito", "Producto agregado correctamente")
                 producto_window.destroy()
                 self.mostrar_inventario()

@@ -326,3 +326,61 @@ class PDFGenerator:
         except Exception as e:
             print(f"Error generando PDF de clientes: {e}")
             return False
+
+    def generar_pdf_markdown(self, md_path, pdf_path, titulo=None):
+        try:
+            from reportlab.platypus import ListFlowable, ListItem
+            styles = getSampleStyleSheet()
+            title_style = styles['Heading1']
+            h2_style = styles['Heading2']
+            h3_style = styles['Heading3']
+            normal_style = styles['Normal']
+
+            elements = []
+
+            if titulo:
+                elements.append(Paragraph(titulo, title_style))
+                elements.append(Spacer(1, 12))
+
+            with open(md_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            lines = content.splitlines()
+            pending_list = []
+
+            def flush_list():
+                nonlocal pending_list
+                if pending_list:
+                    elements.append(ListFlowable(pending_list, bulletType='bullet'))
+                    pending_list = []
+
+            for line in lines:
+                s = line.rstrip()
+                if not s:
+                    flush_list()
+                    elements.append(Spacer(1, 6))
+                    continue
+                if s.startswith('# '):
+                    flush_list()
+                    elements.append(Paragraph(s[2:].strip(), title_style))
+                elif s.startswith('## '):
+                    flush_list()
+                    elements.append(Paragraph(s[3:].strip(), h2_style))
+                elif s.startswith('### '):
+                    flush_list()
+                    elements.append(Paragraph(s[4:].strip(), h3_style))
+                elif s.startswith('- '):
+                    item_para = Paragraph(s[2:].strip(), normal_style)
+                    pending_list.append(ListItem(item_para))
+                else:
+                    flush_list()
+                    elements.append(Paragraph(s, normal_style))
+
+            flush_list()
+
+            doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+            doc.build(elements)
+            return True
+        except Exception as e:
+            print(f"Error generando PDF desde Markdown: {e}")
+            return False

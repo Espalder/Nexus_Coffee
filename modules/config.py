@@ -4,15 +4,13 @@ Módulo de configuración para Nexus Café
 Contiene la configuración de la aplicación
 """
 
-import os
-
 # Configuración de base de datos MySQL
 DB_CONFIG = {
-    'host': os.environ.get('MYSQL_HOST', 'localhost'),
-    'user': os.environ.get('MYSQL_USER', 'root'),
-    'password': os.environ.get('MYSQL_PASSWORD', ''),
-    'database': os.environ.get('MYSQL_DATABASE', 'nexus_coffee'),
-    'port': int(os.environ.get('MYSQL_PORT', '3306'))
+    'host': 'localhost',
+    'user': 'root',  # Cambiar según tu configuración
+    'password': 'KV7$LU%9k&tQ#ayU',  # Cambiar según tu configuración
+    'database': 'nexus_coffee',
+    'port': 3306
 }
 
 # Configuración de la aplicación
@@ -35,6 +33,7 @@ CAFETERIA_CONFIG = {
 }
 
 # Configuración de rutas
+import os
 
 # Obtener la ruta base del proyecto (donde está el main)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
